@@ -1,25 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { RefObject, useCallback, useState } from "react";
+import Dropzone from "react-dropzone";
+import "./App.css";
 
 function App() {
+  const [files, setFiles] = useState<string[]>([]);
+  const handleDrop = useCallback(
+    (files: File[]) => {
+      setFiles(files.map(({ name }) => name));
+    },
+    [setFiles]
+  );
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Dropzone onDrop={handleDrop}>
+      {({ getRootProps, getInputProps, rootRef, inputRef, open }) => (
+        <div
+          className="App"
+          {...getRootProps()}
+          ref={rootRef as RefObject<HTMLDivElement>}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <input id="file-upload" {...getInputProps()} ref={inputRef} />
+          <div>
+            <div>
+              <label htmlFor="file-upload" className="button" onClick={open}>
+                Choose Files
+              </label>
+            </div>
+          </div>
+          <pre>
+            {files.map((file) => {
+              return <div>{file}</div>;
+            })}
+          </pre>
+        </div>
+      )}
+    </Dropzone>
   );
 }
 
